@@ -28,7 +28,8 @@ namespace CityInfo.API
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appSettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appSettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+                .AddJsonFile($"appSettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
 
             Configuration = builder.Build();
         }
@@ -48,8 +49,7 @@ namespace CityInfo.API
 #endif
 
             //Set up the SQL Server connection
-            var connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=CityInfoDB;Trusted_Connection=True;";
-            //var connectionString = Startup.Configuration["connectionStrings:cityInfoDBConnectionString"];
+            var connectionString = Startup.Configuration["connectionStrings:cityInfoDBConnectionString"];
             services.AddDbContext<CityInfoContext>(o => o.UseSqlServer(connectionString));
 
             //Add the DB context so we can inject it into our classes
