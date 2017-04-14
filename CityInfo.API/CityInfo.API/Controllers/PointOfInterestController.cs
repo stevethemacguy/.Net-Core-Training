@@ -109,7 +109,7 @@ namespace CityInfo.API.Controllers
                 c => c.PointsOfInterest).Max(p => p.Id);
 
             //Map the POIForCreation values to a POI since we use the POI in the rest of the app
-            var finalPointOfInterest = new PointOfInterest()
+            var finalPointOfInterest = new PointOfInterestDto()
             {
                 Id = ++maxPointOfInterestId,
                 Name = pointOfInterest.Name,

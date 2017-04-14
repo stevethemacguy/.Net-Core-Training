@@ -38,22 +38,24 @@ namespace CityInfo.API
                 },
                  new City()
                 {
-                    Id = 2,
                     Name = "Sacramento",
                     Description = "The Capital City",
                     PointsOfInterest = new List<PointOfInterest>()
                     {
                         new PointOfInterest()
                         {
-                            Id = 3,
                             Name = "The State Capital",
                             Description = "Where public officials pretend to do work."
                         },
                         new PointOfInterest()
                         {
-                            Id = 4,
                             Name = "MidTown Stomp",
                             Description = "The best place to swing dance on a Saturday Night"
+                        },
+                        new PointOfInterest()
+                        {
+                            Name = "Burgers and Brew",
+                            Description = "The best place to enjoy food and beer with your friends."
                         },
                     }
                 },
