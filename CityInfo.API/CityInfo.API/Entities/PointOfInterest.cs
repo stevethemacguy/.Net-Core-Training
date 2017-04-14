@@ -17,7 +17,7 @@ namespace CityInfo.API.Entities
         [MaxLength(40)]
         public string Name { get; set; }
 
-        [MaxLength(100)]
+        [MaxLength(200)]
         public string Description { get; set; }
 
         //Create a foreign key that points to the parent City. In this case, "City" is considered a "navigation property"
