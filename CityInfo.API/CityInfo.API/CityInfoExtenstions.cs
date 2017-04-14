@@ -23,7 +23,7 @@ namespace CityInfo.API
                 new City()
                 {
                      Name = "New York City",
-                     Description = "The one with that big park.",
+                     Description = "City of Skyscrapers.",
                      PointsOfInterest = new List<PointOfInterest>()
                      {
                          new PointOfInterest() {
@@ -62,7 +62,7 @@ namespace CityInfo.API
                 new City()
                 {
                     Name = "Paris",
-                    Description = "The one with that big tower.",
+                    Description = "It's in France.",
                     PointsOfInterest = new List<PointOfInterest>()
                      {
                          new PointOfInterest() {

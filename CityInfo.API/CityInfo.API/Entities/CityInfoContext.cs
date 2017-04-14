@@ -15,6 +15,7 @@ namespace CityInfo.API.Entities
             Database.Migrate();
         }
 
+        //Used to query and save Entities to the DB
         public DbSet<City> Cities { get; set; }
         public DbSet<PointOfInterest> PointsOfInterest{ get; set; }
     }
