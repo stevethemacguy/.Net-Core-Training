@@ -15,7 +15,7 @@ namespace CityInfo.API.Entities
             Database.Migrate();
         }
 
-        DbSet<City> Cities { get; set; }
-        DbSet<PointOfInterest> PointsOfInterest{ get; set; }
+        public DbSet<City> Cities { get; set; }
+        public DbSet<PointOfInterest> PointsOfInterest{ get; set; }
     }
 }

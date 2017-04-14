@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
-using CityInfo.API.Models;
+﻿using CityInfo.API.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CityInfo.API
 {
@@ -8,80 +11,76 @@ namespace CityInfo.API
     {
         //A singleton
         public static CitiesDataStore Current { get; } = new CitiesDataStore();
-
-        public List<City> Cities { get; set; }
+        public List<CityDto> Cities { get; set; }
 
         //Constructor
         public CitiesDataStore()
         {
-            // A list of CityDto Objects
-            Cities = new List<City>()
+            // A list of CityDto Dummy Objects
+            Cities = new List<CityDto>()
             {
-                new City()
+                new CityDto()
                 {
-                    Id = 1,
-                    Name = "New York City",
-                    Description = "It has a big park.",
-                    PointsOfInterest = new List<PointOfInterest>()
-                    {
-                        new PointOfInterest()
-                        {
-                            Id = 1,
-                            Name = "Central Park",
-                            Description = "The most visited urban park in the United States."
-                        },
-                        new PointOfInterest()
-                        {
-                            Id = 2,
-                            Name = "Empire State Building",
-                            Description = "A 102-story skyscraper located in Midtown Manhattan."
-                        },
-                    }
+                     Id = 1,
+                     Name = "New York City",
+                     Description = "The one with that big park.",
+                     PointsOfInterest = new List<PointOfInterestDto>()
+                     {
+                         new PointOfInterestDto() {
+                             Id = 1,
+                             Name = "Central Park",
+                             Description = "The most visited urban park in the United States." },
+                          new PointOfInterestDto() {
+                             Id = 2,
+                             Name = "Empire State Building",
+                             Description = "A 102-story skyscraper located in Midtown Manhattan." },
+                     }
                 },
-                new City()
+                new CityDto()
                 {
                     Id = 2,
                     Name = "Sacramento",
                     Description = "The Capital City",
-                    PointsOfInterest = new List<PointOfInterest>()
+                    PointsOfInterest = new List<PointOfInterestDto>()
                     {
-                        new PointOfInterest()
+                        new PointOfInterestDto()
                         {
                             Id = 3,
                             Name = "The State Capital",
                             Description = "Where public officials pretend to do work."
                         },
-                        new PointOfInterest()
+                        new PointOfInterestDto()
                         {
                             Id = 4,
                             Name = "MidTown Stomp",
                             Description = "The best place to swing dance on a Saturday Night"
                         },
                     }
+
                 },
-                new City()
+                new CityDto()
                 {
-                    Id = 3,
+                    Id= 3,
                     Name = "Paris",
-                    Description = "It has a big tower.",
-                    PointsOfInterest = new List<PointOfInterest>()
-                    {
-                        new PointOfInterest()
-                        {
-                            Id = 5,
-                            Name = "Eiffel Tower",
-                            Description =
-                                "A wrought iron lattice tower on the Champ de Mars, named after engineer Gustave Eiffel."
-                        },
-                        new PointOfInterest()
-                        {
-                            Id = 6,
-                            Name = "The Louvre",
-                            Description = "The world's largest museum."
-                        },
-                    }
+                    Description = "The one with that big tower.",
+                    PointsOfInterest = new List<PointOfInterestDto>()
+                     {
+                         new PointOfInterestDto()
+                         {
+                             Id = 5,
+                             Name = "Eiffel Tower",
+                             Description = "A wrought iron lattice tower on the Champ de Mars, named after engineer Gustave Eiffel."
+                         },
+                         new PointOfInterestDto()
+                         {
+                             Id = 6,
+                             Name = "The Louvre",
+                             Description = "The world's largest museum."
+                         }
+                     }
                 }
             };
+
         }
     }
 }
