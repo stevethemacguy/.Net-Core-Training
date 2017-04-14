@@ -11,8 +11,8 @@ namespace CityInfo.API.Entities
         public CityInfoContext(DbContextOptions<CityInfoContext> options): base(options)
         {
             //If the DB is not yet created, then create it with our entity objects.
-            Database.EnsureCreated();
-            //Database.Migrate();
+            //Database.EnsureCreated();
+            Database.Migrate();
         }
 
         DbSet<City> Cities { get; set; }
