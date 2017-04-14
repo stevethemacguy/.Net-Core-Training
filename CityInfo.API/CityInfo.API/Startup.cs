@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -11,6 +12,7 @@ using Newtonsoft.Json.Serialization;
 using NLog.Extensions.Logging;
 using CityInfo.API.Services;
 using Microsoft.Extensions.Configuration;
+using CityInfo.API.Entities;
 
 namespace CityInfo.API
 {
@@ -44,6 +46,15 @@ namespace CityInfo.API
 #else
             services.AddTransient<IMailService, CloudMailService>();
 #endif
+
+            //Set up the SQL Server connection
+            var connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=CityInfoDB;Trusted_Connection=True;";
+            //var connectionString = Startup.Configuration["connectionStrings:cityInfoDBConnectionString"];
+            services.AddDbContext<CityInfoContext>(o => o.UseSqlServer(connectionString));
+
+            //Add the DB context so we can inject it into our classes
+            services.AddDbContext<CityInfoContext>();
+
             //If you want to return UpperCase property names instead of camelCase. For new applications,
             //you'll probably want camelCase (the .Net Core default), but if you're working with Old MVC apps, then you may want uppercase.
             //services.AddMvc()
