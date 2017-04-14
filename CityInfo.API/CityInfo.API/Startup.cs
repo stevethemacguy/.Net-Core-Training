@@ -55,6 +55,9 @@ namespace CityInfo.API
             //Add the DB context so we can inject it into our classes
             services.AddDbContext<CityInfoContext>();
 
+            //Scoped creates the CityInfoRepository once per request.
+            services.AddScoped<ICityInfoRepository, CityInfoRepository>();
+
             //If you want to return UpperCase property names instead of camelCase. For new applications,
             //you'll probably want camelCase (the .Net Core default), but if you're working with Old MVC apps, then you may want uppercase.
             //services.AddMvc()
