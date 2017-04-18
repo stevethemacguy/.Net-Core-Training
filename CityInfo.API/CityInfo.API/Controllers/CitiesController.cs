@@ -22,7 +22,7 @@ namespace CityInfo.API.Controllers
         public IActionResult GetCities()
         {
             //Get the cities from the DB. NOTE: You don't return the entities directly, but use the DTO classes instead
-            var cityEntities= _cityInfoRepo.GetCities();
+            var cityEntities = _cityInfoRepo.GetCities();
 
             var allCities = new List<CityWithoutPointsOfInterestDto>();
 
@@ -36,15 +36,15 @@ namespace CityInfo.API.Controllers
                     Name = cityEntity.Name
                 });
             }
-            
+
             return Ok(allCities);
         }
 
         [HttpGet("{id}")]
         //id is automatically set with the id parameters coming from the request URL
-        public IActionResult GetCity(int id)
+        public IActionResult GetCity(int id, bool includePois = false)
         {
-            var cityToReturn = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == id);
+            var cityToReturn = _cityInfoRepo.GetCity(id, includePois);
 
             if (cityToReturn == null)
             {
@@ -52,8 +52,38 @@ namespace CityInfo.API.Controllers
             }
             else
             {
-                //Return a basic Json object
-                return Ok(cityToReturn);
+
+                if (includePois)
+                {
+                    var cityResult = new CityDto()
+                    {
+                        Id = cityToReturn.Id,
+                        Name = cityToReturn.Name,
+                        Description = cityToReturn.Description
+                    };
+
+                    foreach (var p in cityToReturn.PointsOfInterest)
+                    {
+                        cityResult.PointsOfInterest.Add(new PointOfInterestDto()
+                        {
+                            Id = p.Id,
+                            Name = p.Name,
+                            Description = p.Description
+                        });
+                    }
+                    return Ok(cityResult);
+                }
+                else
+                {
+                    var cityResult = new CityWithoutPointsOfInterestDto()
+                    {
+                        Id = cityToReturn.Id,
+                        Name = cityToReturn.Name,
+                        Description = cityToReturn.Description
+                    };
+
+                    return Ok(cityResult);
+                }
             }
         }
     }
