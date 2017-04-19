@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CityInfo.API.Models;
 
-namespace CityInfo.API
+namespace CityInfo.API.Models
 {
     public class CityDto
     {

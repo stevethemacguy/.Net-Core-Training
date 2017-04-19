@@ -24,18 +24,8 @@ namespace CityInfo.API.Controllers
             //Get the cities from the DB. NOTE: You don't return the entities directly, but use the DTO classes instead
             var cityEntities = _cityInfoRepo.GetCities();
 
-            var allCities = new List<CityWithoutPointsOfInterestDto>();
-
-            //Map the city entities to the DTO classes. TODO: Do this automatically isntead.
-            foreach (var cityEntity in cityEntities)
-            {
-                allCities.Add(new CityWithoutPointsOfInterestDto
-                {
-                    Id = cityEntity.Id,
-                    Description = cityEntity.Description,
-                    Name = cityEntity.Name
-                });
-            }
+            //Map the city entities to the DTO classes using automapper
+            var allCities = AutoMapper.Mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(cityEntities);
 
             return Ok(allCities);
         }
@@ -52,36 +42,39 @@ namespace CityInfo.API.Controllers
             }
             else
             {
-
                 if (includePois)
                 {
-                    var cityResult = new CityDto()
-                    {
-                        Id = cityToReturn.Id,
-                        Name = cityToReturn.Name,
-                        Description = cityToReturn.Description
-                    };
-
-                    foreach (var p in cityToReturn.PointsOfInterest)
-                    {
-                        cityResult.PointsOfInterest.Add(new PointOfInterestDto()
-                        {
-                            Id = p.Id,
-                            Name = p.Name,
-                            Description = p.Description
-                        });
-                    }
+                    var cityResult = AutoMapper.Mapper.Map<CityDto>(cityToReturn);
                     return Ok(cityResult);
                 }
                 else
                 {
-                    var cityResult = new CityWithoutPointsOfInterestDto()
-                    {
-                        Id = cityToReturn.Id,
-                        Name = cityToReturn.Name,
-                        Description = cityToReturn.Description
-                    };
+                    var cityResult = AutoMapper.Mapper.Map<CityWithoutPointsOfInterestDto>(cityToReturn);
+                    return Ok(cityResult);
+                }
+            }
+        }
 
+        [HttpGet("getcitybyname")]
+        //id is automatically set with the id parameters coming from the request URL
+        public IActionResult GetCityByName(string name, bool includePois = false)
+        {
+            var cityToReturn = _cityInfoRepo.GetCityByName(name, includePois);
+
+            if (cityToReturn == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                if (includePois)
+                {
+                    var cityResult = AutoMapper.Mapper.Map<CityDto>(cityToReturn);
+                    return Ok(cityResult);
+                }
+                else
+                {
+                    var cityResult = AutoMapper.Mapper.Map<CityWithoutPointsOfInterestDto>(cityToReturn);
                     return Ok(cityResult);
                 }
             }

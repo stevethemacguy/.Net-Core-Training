@@ -70,5 +70,19 @@ namespace CityInfo.API.Services
         {
             return (_context.SaveChanges() >= 0);
         }
+
+        public City GetCityByName(string name, bool includePointsOfInterest)
+        {
+            if (includePointsOfInterest)
+            {
+                //Get he point of interest that has the same ID as the city ID. FirstOrDefault basically executes the query
+                return _context.Cities
+                    .Include(c => c.PointsOfInterest)
+                    .FirstOrDefault(c => c.Name == name);
+            }
+
+            //If we're not including the POIs, then just return the city
+            return _context.Cities.FirstOrDefault(c => c.Name == name);
+        }
     }
 }

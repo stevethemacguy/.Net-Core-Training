@@ -98,6 +98,21 @@ namespace CityInfo.API
                 app.UseExceptionHandler();
             }
 
+            //Seed the database with data
+            cityInfoContext.EnsureSeedDataForContext();
+
+            //Create mappings from the application's DTOs to their respective entity classes returned from Sql.
+            AutoMapper.Mapper.Initialize(cfg =>
+            {
+                //Syntax is CreateMap(SourceType, DestinationType). In other words: From an Entity to a DTO object
+                cfg.CreateMap<Entities.City, Models.CityWithoutPointsOfInterestDto>();
+
+                //You can create multiple mappings. In this case, getting a city back should match to both the CityDto and the CityWithoutPointsOfInterestDto
+                cfg.CreateMap<Entities.City, Models.CityDto>();
+
+                cfg.CreateMap<Entities.PointOfInterest, Models.PointOfInterestDto>();
+            });
+
             // Show Error pages when the consuming browser gets an error (e.g. instead of a silent 404 error)
             //app.UseStatusCodePages();
             app.UseMvc();
@@ -106,9 +121,6 @@ namespace CityInfo.API
             //{
             //    await context.Response.WriteAsync("Hello World!");
             //});
-
-            //Seed the database with data
-            cityInfoContext.EnsureSeedDataForContext();
         }
     }
 }
