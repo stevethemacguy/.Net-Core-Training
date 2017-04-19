@@ -14,10 +14,13 @@ namespace CityInfo.API.Services
         //Get a single city
         City GetCity(int cityId, bool includePointsOfInterest);
 
+        //Check that a City exists
+        bool CityExists(int cityId);
+
         //Get all POIs
         IEnumerable<PointOfInterest> GetPointsOfInterestForCity(int cityId);
 
         //Get a single POI for a specified CityId
-        PointOfInterest GetPointOfInterestForCity(int cityId);
+        PointOfInterest GetPointOfInterestForCity(int cityId, int poiId);
     }
 }

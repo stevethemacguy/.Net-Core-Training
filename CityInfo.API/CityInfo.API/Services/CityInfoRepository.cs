@@ -70,16 +70,5 @@ namespace CityInfo.API.Services
         {
             return (_context.SaveChanges() >= 0);
         }
-
-        public City GetCity(int cityID)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        public PointOfInterest GetPointOfInterestForCity(int cityID)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
