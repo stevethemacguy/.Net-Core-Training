@@ -87,5 +87,11 @@ namespace CityInfo.API.Services
             //If we're not including the POIs, then just return the city
             return _context.Cities.FirstOrDefault(c => c.Name == name);
         }
+
+        public void Delete(PointOfInterest pointOfInterest)
+        {
+            //PoinstOfInterest is a DBSet. To remove a POI from the set, we use Remove().
+            _context.PointsOfInterest.Remove(pointOfInterest);
+        }
     }
 }

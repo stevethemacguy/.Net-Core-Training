@@ -31,5 +31,7 @@ namespace CityInfo.API.Services
 
         //Required to save new entities to the database context when they are created.
         bool Save();
+
+        void DeletePointOfInterest(PointOfInterest pointOfInterest);
     }
 }

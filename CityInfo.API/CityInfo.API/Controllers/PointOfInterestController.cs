@@ -73,7 +73,7 @@ namespace CityInfo.API.Controllers
             return Ok(AutoMapper.Mapper.Map<PointOfInterestDto>(poi));
         }
 
-        // CREATE. we use the same url route, but just make it a post. Also, we use POIForCreated (so we can use validation attributes)
+        //USE POST TO CREATE. we use the same url route, but just make it a post. Also, we use POIForCreated (so we can use validation attributes)
         //[FromBody] says to get the POI from the post body and try to de-serialize it to a PointsOfInterestForCreation object
         [HttpPost("{cityId}/pointOfInterest")]
         public IActionResult CreatePoi(int cityId, [FromBody] PointOfInterestForCreation pointOfInterest)
@@ -127,6 +127,7 @@ namespace CityInfo.API.Controllers
                                    newlyCreatedPoi);
         }
 
+        //USE PUT TO UPDATE
         [HttpPut("{cityId}/pointsOfInterest/{poiId}", Name = "UpdatePointOfInterest")]
         public IActionResult UpdatePointOfInterest(int cityId, int poiId, 
             [FromBody] PointOfInterestForUpdate pointOfInterest)
@@ -177,6 +178,7 @@ namespace CityInfo.API.Controllers
             return NoContent();
         }
 
+        //USE PATCH TO MAKE PARTIAL UPDATES
         [HttpPatch("{cityId}/pointsOfInterest/{poiId}")]
         public IActionResult PartiallyUpdatePointOfInterest(int cityId, int poiId,
             [FromBody] JsonPatchDocument<PointOfInterestForUpdate> patchDoc )
@@ -239,28 +241,40 @@ namespace CityInfo.API.Controllers
             return NoContent();
         }
 
+        // DELETE
         [HttpDelete("{cityId}/pointsOfInterest/{poiId}")]
         public IActionResult DeletePoi(int cityId, int poiId)
         {
-            //Check that the city and poi exist
-            var city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
-            if (city == null)
+            //Check that the city exists
+            //See if the city that was passed in exists in the collection
+            var cityExists = _cityInfoRepo.CityExists(cityId);
+
+            if (cityExists == false)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            var toDelete = city.PointsOfInterest.FirstOrDefault(p => p.Id == poiId);
+            //Get the POI entity that's in the DB, so we can delete it.
+            var toDeletetEntity = _cityInfoRepo.GetPointOfInterestForCity(cityId, poiId);
 
-            if (toDelete == null)
+            if (toDeletetEntity == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
             //Remove the Poi
-            city.PointsOfInterest.Remove(toDelete);
+            _cityInfoRepo.DeletePointOfInterest(toDeletetEntity);
+
+            //Since we just removed an entity form the DB, save changes on the repo to ensure the change persists.
+            if (!_cityInfoRepo.Save())
+            {
+                _logger.LogInformation("The attempt to delete a POI from the database FAILED.");
+                return StatusCode(500, "A problem occured while handling your request");
+            }
 
             _emailService.Send("Point of interest deleted.",
-                   $"Point of interest {toDelete.Name} with id {toDelete.Id} was deleted.");
+                   $"Point of interest {toDeletetEntity.Name} with id {toDeletetEntity.Id} was deleted.");
+
             return NoContent();
         }
     }
