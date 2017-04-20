@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace CityInfo.API
 {
+    //CityInfoExtensions is used to seed the local SQL DB with data. 
+    //This is a "code-first" approach (i.e. we're creating new DB entities using C# classes/objects)
     public static class CityInfoExtensions
     {
         //"this" here means that EnsureSeedDataForContext extends CityInfoContext
@@ -17,7 +19,7 @@ namespace CityInfo.API
                 return;
             }
 
-            // init seed data
+            //Create the seed data
             var cities = new List<City>()
             {
                 new City()
@@ -77,7 +79,10 @@ namespace CityInfo.API
                 }
             };
 
+            //Track the new entities
             context.Cities.AddRange(cities);
+
+            //Since we just added entities to the DB, save changes so that they persist after the application closes.
             context.SaveChanges();
         }
     }

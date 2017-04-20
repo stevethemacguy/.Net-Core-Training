@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CityInfo.API
 {
-    //Just an in-memory data store (not very realistic)
+    //An in-memory data store (no longer needed). THIS HAS BEEN REPLACED by the actual SQL database (see CityInfoRepository)
     public class CitiesDataStore
     {
         //A singleton
