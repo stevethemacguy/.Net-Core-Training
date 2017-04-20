@@ -149,18 +149,29 @@ namespace CityInfo.API.Controllers
             }
 
             // See if the city that was passed in exists in the collection
-            var theCity = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
+            var doesCityExist = _cityInfoRepo.CityExists(cityId);
 
-            if (theCity == null)
+            if (doesCityExist == false)
             {
                 return NotFound();
             }
 
-            //Update the POI that's in the DB (faked at this point). With PUT, you must update ALL properties
-            var poiToUpdate= theCity.PointsOfInterest.FirstOrDefault(p => p.Id == poiId);
-            poiToUpdate.Name = pointOfInterest.Name;
-            poiToUpdate.Description = pointOfInterest.Description;
+            //Update the POI that's in the DB. With PUT, you must update ALL properties
+            var pointOfInterestEntity = _cityInfoRepo.GetPointOfInterestForCity(cityId, poiId);
 
+            if (pointOfInterestEntity == null)
+            {
+                return NotFound();
+            }
+
+            // The first argument is the new Object you're using to overwrite the existing entity. The second argument is the existing entity in the DB
+            AutoMapper.Mapper.Map(pointOfInterest, pointOfInterestEntity); //This will overwrite the pointOfInterestEntity with the new pointOfInterest
+
+            if (!_cityInfoRepo.Save())
+            {
+                _logger.LogInformation("There was a problem when trying to update an existing POI in the database.");
+                return StatusCode(500, "A problem occured while handling your request");
+            }
 
             //Since we're just updating
             return NoContent();

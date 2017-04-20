@@ -113,6 +113,9 @@ namespace CityInfo.API
 
                 //For POST (i.e. creating a POI, the arguments are reveresed because the Entities.POI is the destination type).
                 cfg.CreateMap<Models.PointOfInterestForCreation, Entities.PointOfInterest>();
+
+                //For updating with PUT
+                cfg.CreateMap<Models.PointOfInterestForUpdate, Entities.PointOfInterest>();
             });
 
             // Show Error pages when the consuming browser gets an error (e.g. instead of a silent 404 error)
