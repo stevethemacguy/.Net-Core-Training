@@ -50,10 +50,9 @@ namespace CityInfo.API
 
             //Set up the SQL Server connection
             var connectionString = Startup.Configuration["connectionStrings:cityInfoDBConnectionString"];
-            services.AddDbContext<CityInfoContext>(o => o.UseSqlServer(connectionString));
-
+            
             //Add the DB context so we can inject it into our classes
-            services.AddDbContext<CityInfoContext>();
+            services.AddDbContext<CityInfoContext>(o => o.UseSqlServer(connectionString));
 
             //Scoped creates the CityInfoRepository once per request.
             services.AddScoped<ICityInfoRepository, CityInfoRepository>();
@@ -111,6 +110,9 @@ namespace CityInfo.API
                 cfg.CreateMap<Entities.City, Models.CityDto>();
 
                 cfg.CreateMap<Entities.PointOfInterest, Models.PointOfInterestDto>();
+
+                //For POST (i.e. creating a POI, the arguments are reveresed because the Entities.POI is the destination type).
+                cfg.CreateMap<Models.PointOfInterestForCreation, Entities.PointOfInterest>();
             });
 
             // Show Error pages when the consuming browser gets an error (e.g. instead of a silent 404 error)

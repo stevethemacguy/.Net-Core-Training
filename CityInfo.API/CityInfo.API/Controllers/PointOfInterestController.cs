@@ -48,8 +48,7 @@ namespace CityInfo.API.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("{cityId}/pointOfInterest/{poiId}")]
+        [HttpGet("{cityId}/pointOfInterest/{poiId}", Name = "GetPointOfInterest")]
         public IActionResult GetPointOfInterest(int cityId, int poiId)
         {
             //See if the city that was passed in exists in the collection
@@ -76,7 +75,7 @@ namespace CityInfo.API.Controllers
 
         // CREATE. we use the same url route, but just make it a post. Also, we use POIForCreated (so we can use validation attributes)
         //[FromBody] says to get the POI from the post body and try to de-serialize it to a PointsOfInterestForCreation object
-        [HttpPost("{cityId}/pointsOfInterest")]
+        [HttpPost("{cityId}/pointOfInterest")]
         public IActionResult CreatePoi(int cityId, [FromBody] PointOfInterestForCreation pointOfInterest)
         {
             //If the data sent cannot be de-serialized into a PointsOfInterestForCreation, the POI will be null
@@ -96,39 +95,36 @@ namespace CityInfo.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            // See if the city that was passed in exists in the collection
-            var theCity = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
+            // See if the city that was passed in exists in the database
+            var theCityExists = _cityInfoRepo.CityExists(cityId);
 
-            if (theCity == null)
+            if (!theCityExists)
             {
                 return NotFound();
             }
 
-            
-            //Create a unique id
-            var maxPointOfInterestId = CitiesDataStore.Current.Cities.SelectMany(
-                c => c.PointsOfInterest).Max(p => p.Id);
+            //The pointOfInterest comes from the post body and is of type PointOfInterestForCreation.
+            //Since we created a mapping for this in the mapper (see startup.cs), we can create a POI entity by mapping it from the POIForCreation.
+            var finalPointOfInterest = AutoMapper.Mapper.Map<Entities.PointOfInterest>(pointOfInterest);
 
-            //Map the POIForCreation values to a POI since we use the POI in the rest of the app
-            var finalPointOfInterest = new PointOfInterestDto()
+            _cityInfoRepo.AddPointOfInterestForCity(cityId,finalPointOfInterest);
+
+            //Attempt to save the new POI to the repo. If it doesn't return an object, then it fails
+            if (!_cityInfoRepo.Save())
             {
-                Id = ++maxPointOfInterestId,
-                Name = pointOfInterest.Name,
-                Description = pointOfInterest.Description
-            };
+                _logger.LogInformation("There was a problem when trying to save the new POI to the database.");
+                return StatusCode(500, "A problem occured while handling your request");
+            }
 
-            theCity.PointsOfInterest.Add(finalPointOfInterest);
+            var newlyCreatedPoi = AutoMapper.Mapper.Map<Models.PointOfInterestDto>(finalPointOfInterest);
 
-            //This returns a response with the URL where the newly created resource can be found.
+            //This returns a 201 (created) response with the URL where the newly created resource can be found.
             //Since we use the Get request to get a POI, we're saying that in order to get to this resource, they'll
             //need to use the GetPointOfInterest Route (passing in a cityId and POI Id that the Get Route needs).
-            return CreatedAtRoute("GetPointOfInterest", new
-                {
-                    cityId = cityId,
-                    poiId = finalPointOfInterest.Id
-                }, 
-                finalPointOfInterest        //Also pass in the newly created point, that will end up in the response body.
-            );
+            //IMPORTANT: The GET route MUST have a name that matches the name in CreatedAtRoute here (e.g. "GetPointOfInterest")
+            return CreatedAtRoute("GetPointOfInterest", 
+                                   new { cityId = cityId, poiId = newlyCreatedPoi.Id }, 
+                                   newlyCreatedPoi);
         }
 
         [HttpPut("{cityId}/pointsOfInterest/{poiId}", Name = "UpdatePointOfInterest")]

@@ -66,8 +66,11 @@ namespace CityInfo.API.Services
             _context.PointsOfInterest.Remove(pointOfInterest);
         }
 
+        //Used to persist changes in the SQL DB (i.e. when you create or delete something from the DB, you must call save on the DB context).
         public bool Save()
         {
+            //SaveChanges returns the number of entities that were changed, if any.
+            //In this case, we'll just return true if at least one entity was updated/removed.
             return (_context.SaveChanges() >= 0);
         }
 

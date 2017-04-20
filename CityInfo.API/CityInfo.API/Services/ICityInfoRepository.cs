@@ -26,5 +26,10 @@ namespace CityInfo.API.Services
         //Get a single POI for a specified CityId
         PointOfInterest GetPointOfInterestForCity(int cityId, int poiId);
         
+        //Add a city
+        void AddPointOfInterestForCity(int cityId, PointOfInterest pointOfInterest);
+
+        //Required to save new entities to the database context when they are created.
+        bool Save();
     }
 }
