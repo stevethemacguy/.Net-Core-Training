@@ -20,6 +20,13 @@ namespace CityInfo.API
                 .Build();
 
             host.Run();
+
+            //Instead of using IIS, you can also use a direct URL. This can be used to connect to the API from your mac:
+            //Optional. Use this VM's IP instead of localhost. For example: 192.168.173.201:5000/api/cities. 
+            //WARNING: UseIISIntegration() will override UseUrls. If you want to test on your mac, you MUST remove the UseIISIntegration Line!
+            //Also, when debugging, you should select CityInfo.API instead of IISExpress.
+            //.UseUrls("http://192.168.173.201:5000/")
+            ////.UseIISIntegration()
         }
     }
 }
