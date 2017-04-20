@@ -156,7 +156,7 @@ namespace CityInfo.API.Controllers
                 return NotFound();
             }
 
-            //Update the POI that's in the DB. With PUT, you must update ALL properties
+            //Get the POI entity that's in the DB, so we can update it.
             var pointOfInterestEntity = _cityInfoRepo.GetPointOfInterestForCity(cityId, poiId);
 
             if (pointOfInterestEntity == null)
@@ -189,29 +189,25 @@ namespace CityInfo.API.Controllers
             }
 
             // See if the city that was passed in exists in the collection
-            var theCity = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
+            var doesCityExist = _cityInfoRepo.CityExists(cityId);
 
-            if (theCity == null)
-            {
-                return NotFound();
-            }
-            
-            //Get the POI
-            var poiFromDb = theCity.PointsOfInterest.FirstOrDefault(p => p.Id == poiId);
-
-            if (poiFromDb == null)
+            if (doesCityExist == false)
             {
                 return NotFound();
             }
 
-            //Convert the POI into a PointOfInterestForUpdate
-            var poiToPatch = new PointOfInterestForUpdate()
-            {
-                Name = poiFromDb.Name,
-                Description = poiFromDb.Description
-            };
+            //Get the POI entity that's in the DB, so we can update it.
+            var pointOfInterestEntity = _cityInfoRepo.GetPointOfInterestForCity(cityId, poiId);
 
-            //Apply the patch document to the poiToUpdate. We pass in the ModelState to make sure it is valid before attempting to patch
+            if (pointOfInterestEntity == null)
+            {
+                return NotFound();
+            }
+
+            //Map the entitiy to a DTO, so we can then change the DTO properties
+            var poiToPatch = AutoMapper.Mapper.Map<PointOfInterestForUpdate>(pointOfInterestEntity);
+
+            //Apply the patch document to the poiToPatch. We pass in the ModelState to make sure it is valid before attempting to patch
             patchDoc.ApplyTo(poiToPatch, ModelState);
 
             //This ModelState actually refers to the patchDoc, NOT to the POI, so we need to validate that seperately below
@@ -229,9 +225,16 @@ namespace CityInfo.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            //Now that poiToPatch has been updated to the new values from the patchDoc, apply them to the poi in our DB
-            poiFromDb.Name = poiToPatch.Name;
-            poiFromDb.Description = poiToPatch.Description;
+            //Now that poiToPatch has been updated to the new values from the patchDoc, 
+            //overwirte the poi entity in our DB (i.e. the source is the poiToPatch DTO, whichc overwrites the destination (existing) entity (pointOfInterestEntity))
+            AutoMapper.Mapper.Map(poiToPatch, pointOfInterestEntity);
+
+            //Since we just changed an entity, save changes on the repo to ensure the change persists.
+            if (!_cityInfoRepo.Save())
+            {
+                _logger.LogInformation("There was a problem when trying to update an existing POI in the database.");
+                return StatusCode(500, "A problem occured while handling your request");
+            }
 
             return NoContent();
         }

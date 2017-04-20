@@ -116,6 +116,9 @@ namespace CityInfo.API
 
                 //For updating with PUT
                 cfg.CreateMap<Models.PointOfInterestForUpdate, Entities.PointOfInterest>();
+
+                //For updating with Patch. We need the other way around since we're mapping an entity to a POIForUpdate dto.
+                cfg.CreateMap<Entities.PointOfInterest, Models.PointOfInterestForUpdate>();
             });
 
             // Show Error pages when the consuming browser gets an error (e.g. instead of a silent 404 error)
